@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Calculadora</title>
+
+        <!-- CSS Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="style.css">
+
+        <!-- JavaScript Bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+
+
+    </head>
+    <body>
+        
+        <!-- Mostrar soma -->
+        <div class="container">
+            <div class="col-12">
+                <div class="row">
+                    <h1 class="align-self-start">Calculadora Fatecana</h1>
+                    <!-- CALC -->
+                    <div class="col-4 text-center" id="calc">
+                        <header class="card" id="display">
+                            <span class="col align-self-end" id="visor">0</span>
+                        </header>
+                        <main class="col-12" id="middle">
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-light" id="btn7" value="7">7</button>
+                                    <button type="button" class="btn btn-outline-light" id="btn8" value="8">8</button>
+                                    <button type="button" class="btn btn-outline-light" id="btn9" value="9">9</button>
+                                    <button type="button" class="btn btn-outline-light" id="operadorDiv" value="/">/</button>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-light" id="btn4" value="4">4</button>
+                                    <button type="button" class="btn btn-outline-light" id="btn5" value="5">5</button>
+                                    <button type="button" class="btn btn-outline-light" id="btn6" value="6">6</button>
+                                    <button type="button" class="btn btn-outline-light" id="operadorMult">x</button>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-light" id="btn1" value="1">1</button>
+                                    <button type="button" class="btn btn-outline-light" id="btn2" value="2">2</button>
+                                    <button type="button" class="btn btn-outline-light" id="btn3" value="3">3</button>
+                                    <button type="button" class="btn btn-outline-light" id="operadorMais" value="+">+</button>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-light" id="AC">AC</button>
+                                    <button type="button" class="btn btn-outline-light" id="btn0" value="0">0</button>
+                                    <button type="button" class="btn btn-outline-light" id="operadorMenos" value="-">-</button>
+                                    <button type="button" class="btn btn-outline-light" id="igual">=</button>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+
+                    <!-- Histórico -->
+                    <div class="col-8" id="historico">
+                        <aside class="col-12">
+                            <div class="hist"></div>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            const visor = document.querySelector('#visor');
+            const numbers = document.querySelectorAll('[id*=btn]');
+            const operadores = document.querySelectorAll('[id*=operador]');
+            let hist = document.querySelector('.hist');
+
+            let novoNumber = true;
+            let operador;
+            let number1;
+
+            const operacao = () => operador != undefined;
+
+            const calcular = ()=>{
+                if(operacao()){
+                    const number = Number(visor.innerHTML);
+                    novoNumber = true;
+                    if(operador == '+'){
+                        atualizaVisor(Number(number1)+number);
+                        historico(number1, operador, number, visor.innerHTML);
+                        novoNumber = true;
+                    }else if(operador == '-'){
+                        atualizaVisor(Number(number1)-number);
+                        historico(number1, operador, number, visor.innerHTML);
+                        novoNumber = true;
+                    }else if(operador == 'x'){
+                        atualizaVisor(Number(number1)*number);
+                        historico(number1, operador, number, visor.innerHTML);
+                        novoNumber = true;
+                    } else if(operador == '/'){
+                        atualizaVisor(Number(number1)/number);
+                        historico(number1, operador, number, visor.innerHTML);
+                        novoNumber = true;
+                    }
+                }
+            }
+
+            const atualizaVisor = (texto)=>{
+                if(novoNumber){
+                    visor.innerHTML = texto;
+                    novoNumber = false;
+                } else{
+                    visor.novoNumber = true;
+                    visor.innerHTML += texto;
+                }
+                
+            }
+
+            const inserirNumber = (event)=> atualizaVisor(event.target.value);
+            const selecionarOperador = (event)=>{
+                if(!novoNumber){
+                    calcular();
+                    novoNumber = true
+                    operador = event.target.textContent;
+                    number1 = visor.innerHTML;
+                }
+            }
+
+            numbers.forEach(number => {
+                number.addEventListener('click', inserirNumber)
+            });
+
+            operadores.forEach(operador => {
+                operador.addEventListener('click', selecionarOperador)
+            });
+
+            const igualCalc = ()=> {
+                calcular();
+                operador = undefined;
+            }
+
+            document.querySelector('#igual').addEventListener('click', igualCalc);
+
+            let AC = document.querySelector('#AC').addEventListener('click', ()=>{
+                visor.textContent = 0;
+            });
+
+            function historico(numero1, operador, numero2, resultado){
+                let resultOpe = `${numero1} ${operador} ${numero2} = ${resultado}`;
+                let p = document.createElement('p');
+                let result = document.createTextNode(resultOpe);
+                p.appendChild(result);
+                p.setAttribute('class', 'historico');
+                hist.appendChild(p);
+            }
+
+        </script>
+
+    </body>
+</html>
